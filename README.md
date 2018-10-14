@@ -40,7 +40,7 @@ based board running at 40MHz, 48MHz, 80MHz or 200MHz (which is
 currently all of them).
 
 (09/05/2018)
-Version 2 changes by Brian Schmalz : brian@schmalzhaus
+Version 2 changes by Brian Schmalz : brian@schmalzhaus.com
 
 Version 2 brings per-pixel brightness ability to RGB mode as well as a simpler
 constructor with default parameters. All previous sketches will still work with
