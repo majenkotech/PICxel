@@ -109,6 +109,7 @@ public:
 
 //get class variable functions
   uint16_t getNumberOfLEDs(void);
+  bool setNumberOfLEDs(uint16_t);
   uint8_t* getColorArray(void);
   /* Returns the global brightness value */
   uint8_t getBrightness(void);
