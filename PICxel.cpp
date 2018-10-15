@@ -63,21 +63,26 @@ PICxel::PICxel(
   portClr(portOutputRegister(digitalPinToPort(pixelPin)) + 1),
   pinMask(digitalPinToBitMask(pixelPin))
 {
-  setNumberOfLEDs(pixelCount);
+  setNumberOfLEDs(pixelCount, colorArrayPtr, originalColorArrayPtr, pixelBrightnessArrayPtr);
 }
 
 /************************************************************************/
 /* Change the number of pixels and reallocate the new memory size       */
 /* Return true if everything went OK, false if not.                     */
 /************************************************************************/
-bool PICxel::setNumberOfLEDs(uint16_t num) 
+bool PICxel::setNumberOfLEDs(
+  uint16_t pixelCount,
+  uint8_t* colorArrayPtr,
+  uint8_t* originalColorArrayPtr,
+  uint8_t* pixelBrightnessArrayPtr
+)
 {
   if (memoryMode == alloc)
   {
     // User is asking us to allocate the pixel color arrays using calloc
     if (colorMode == GRB)
     {
-      colorArraySizeBytes =  3 * pixelCount;
+      colorArraySizeBytes = 3 * pixelCount;
       colorArray = (uint8_t *)calloc(colorArraySizeBytes, sizeof(uint8_t));
 
       // Only allocate extra two arrays if user wants per-pixel brightness
