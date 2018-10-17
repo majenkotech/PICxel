@@ -77,6 +77,20 @@ bool PICxel::setNumberOfLEDs(
   uint8_t* pixelBrightnessArrayPtr
 )
 {
+  // Always attempt to deallocate old pointers
+  if (colorArray != NULL)
+  {
+    free(colorArray);
+  }
+  if (originalColorArray != NULL)
+  {
+    free(originalColorArray);
+  }
+  if (pixelBrightnessArray != NULL)
+  {
+    free(pixelBrightnessArray);
+  }
+
   if (memoryMode == alloc)
   {
     // User is asking us to allocate the pixel color arrays using calloc
@@ -189,17 +203,40 @@ bool PICxel::setNumberOfLEDs(
 /* Change the static array, freeing an old calloc array if existing     */
 /* and change memory mode for future operations if applicable           */
 /************************************************************************/
-void PICxel::setArrayPointer(uint8_t* colorPtr)
+void PICxel::setArrayPointer(
+  uint8_t* colorArrayPtr,
+  uint8_t* originalColorArrayPtr,
+  uint8_t* pixelBrightnessArrayPtr
+)
 {
-  if (memoryMode == alloc) 
+  if (memoryMode == alloc)
   {
-    if (colorArray != NULL) 
+    if (colorArray != NULL)
     {
       free(colorArray);
     }
+    if (originalColorArray != NULL)
+    {
+      free(originalColorArray);
+    }
+    if (pixelBrightnessArray != NULL)
+    {
+      free(pixelBrightnessArray);
+    }
     memoryMode = noalloc;
   }
-  colorArray = colorPtr;
+  if (colorArrayPtr != NULL)
+  {
+    colorArray = colorArrayPtr;
+  }
+  if (originalColorArrayPtr != NULL)
+  {
+    originalColorArrayPtr = originalColorArrayPtr;
+  }
+  if (pixelBrightnessArrayPtr != NULL)
+  {
+    pixelBrightnessArray = colorArrayPtr;
+  }
 }
 
 

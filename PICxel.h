@@ -115,7 +115,11 @@ public:
     uint8_t* originalColorArrayPtr = NULL,
     uint8_t* pixelBrightnessArrayPtr = NULL
   );
-  void setArrayPointer(uint8_t* colorPtr);
+  void setArrayPointer(
+    uint8_t* colorArrayPtr,
+    uint8_t* originalColorArrayPtr = NULL,
+    uint8_t* pixelBrightnessArrayPtr = NULL
+  );
   uint8_t* getColorArray(void);
   /* Returns the global brightness value */
   uint8_t getBrightness(void);
