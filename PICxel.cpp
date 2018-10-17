@@ -5,8 +5,9 @@
 /*  the PIC32 line of microcontrollers.                                 */
 /*                                                                      */
 /*  tested supported boards:                                            */
-/*    - Digilent UNO32                                                  */
-/*    - Digilent UC32                                                   */
+/*    - Digilent UNO32 (80MHz)                                          */
+/*    - Digilent UC32 (80MHz)                                           */
+/*    - chipKIT Lenny (40MHz)                                           */
 /*                                                                      */
 /*  This library is protected under the GNU GPL v3.0 license            */
 /*  http://www.gnu.org/licenses/                                        */
@@ -15,13 +16,17 @@
 /*                          well as simplifying the main                */
 /*                          GRBrefreshLEDs() function.                  */
 /*                          Tested on 40, 48, 80 and 200 MHz boards     */
-/* 07/28/2017 Brian Schmalz Reformatted to ease readability             */
+/* 07/28/2018 Brian Schmalz Reformatted to ease readability             */
 /*                          Added more comments, function header blocks */
 /*                          Added support for per-pixel brightness      */
 /*                            values by adding per-pixel brightness     */
 /*                            array, new functions to support setting   */
 /*                            it, and new array for storing original    */
 /*                            color values                              */
+/* 10/14/2018 Matt Jenkins Added support for changing number of LEDs   */
+/*                          on the fly and reallocating and freeing     */
+/*                          memory when needed.                         */
+/*                          Tested on 40MHz Lenny                       */
 /*                                                                      */
 /* TODO: Update HSV delays for F_CPU other than 80MHz                   */
 /************************************************************************/
@@ -58,12 +63,40 @@ PICxel::PICxel(
   portClr(portOutputRegister(digitalPinToPort(pixelPin)) + 1),
   pinMask(digitalPinToBitMask(pixelPin))
 {
+  setNumberOfLEDs(pixelCount, colorArrayPtr, originalColorArrayPtr, pixelBrightnessArrayPtr);
+}
+
+/************************************************************************/
+/* Change the number of pixels and reallocate the new memory size       */
+/* Return true if everything went OK, false if not.                     */
+/************************************************************************/
+bool PICxel::setNumberOfLEDs(
+  uint16_t pixelCount,
+  uint8_t* colorArrayPtr,
+  uint8_t* originalColorArrayPtr,
+  uint8_t* pixelBrightnessArrayPtr
+)
+{
+  // Always attempt to deallocate old pointers
+  if (colorArray != NULL)
+  {
+    free(colorArray);
+  }
+  if (originalColorArray != NULL)
+  {
+    free(originalColorArray);
+  }
+  if (pixelBrightnessArray != NULL)
+  {
+    free(pixelBrightnessArray);
+  }
+
   if (memoryMode == alloc)
   {
     // User is asking us to allocate the pixel color arrays using calloc
     if (colorMode == GRB)
     {
-      colorArraySizeBytes =  3 * pixelCount;
+      colorArraySizeBytes = 3 * pixelCount;
       colorArray = (uint8_t *)calloc(colorArraySizeBytes, sizeof(uint8_t));
 
       // Only allocate extra two arrays if user wants per-pixel brightness
@@ -148,6 +181,7 @@ PICxel::PICxel(
         free(pixelBrightnessArray);
       }
     }
+    return false;
   }
   else
   {
@@ -162,7 +196,49 @@ PICxel::PICxel(
       memset((void *)pixelBrightnessArray, 0xFF, pixelCount);
     }
   }
+  return true;
 }
+
+/************************************************************************/
+/* Change the static array, freeing an old calloc array if existing     */
+/* and change memory mode for future operations if applicable           */
+/************************************************************************/
+void PICxel::setArrayPointer(
+  uint8_t* colorArrayPtr,
+  uint8_t* originalColorArrayPtr,
+  uint8_t* pixelBrightnessArrayPtr
+)
+{
+  if (memoryMode == alloc)
+  {
+    if (colorArray != NULL)
+    {
+      free(colorArray);
+    }
+    if (originalColorArray != NULL)
+    {
+      free(originalColorArray);
+    }
+    if (pixelBrightnessArray != NULL)
+    {
+      free(pixelBrightnessArray);
+    }
+    memoryMode = noalloc;
+  }
+  if (colorArrayPtr != NULL)
+  {
+    colorArray = colorArrayPtr;
+  }
+  if (originalColorArrayPtr != NULL)
+  {
+    originalColorArrayPtr = originalColorArrayPtr;
+  }
+  if (pixelBrightnessArrayPtr != NULL)
+  {
+    pixelBrightnessArray = colorArrayPtr;
+  }
+}
+
 
 /************************************************************************/
 /*  Destructor for the PICxel class                                     */
