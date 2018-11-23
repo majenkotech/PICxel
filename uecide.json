@@ -1,0 +1,19 @@
+{
+    "name": "PICxel",
+    "provides": "PICxel.h",
+    "license": "license.txt",
+    "readme": "README.md",
+    "description": "PIC32 Neopixel Library",
+    "category": "Display",
+    "subcategory": "LED",
+    "maintainer": "Brian Schmalz <brian@schmalzhaus.com>",
+    "version": "1.0.4",
+    "family": "pic32",
+    "core": "chipkit",
+    "install": {
+        "keywords.txt": "/",
+        "examples": "/",
+        "PICxel.cpp": "/",
+        "PICxel.h": "/"
+    }
+}
